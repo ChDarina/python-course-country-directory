@@ -8,6 +8,17 @@ from reader import Reader
 from renderer import Renderer
 
 
+def print_table(title: str, table: str) -> None:
+    """
+    Вывод информации о сущности в консоль.
+
+    :param title: Название таблицы.
+    :param table: Таблица.
+    """
+    click.secho(title, fg="white")
+    click.secho(table, fg="green")
+
+
 @click.command()
 @click.option(
     "--location",
@@ -26,10 +37,13 @@ async def process_input(location: str) -> None:
 
     location_info = await Reader().find(location)
     if location_info:
-        lines = await Renderer(location_info).render()
-
-        for line in lines:
-            click.secho(line, fg="green")
+        print_table(
+            "Данные о стране:", await Renderer(location_info).tabulate_country()
+        )
+        print_table(
+            "Данные о погоде:", await Renderer(location_info).tabulate_weather()
+        )
+        print_table("Данные о новостях:", await Renderer(location_info).tabulate_news())
     else:
         click.secho("Информация отсутствует.", fg="yellow")
 
